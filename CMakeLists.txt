@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(LAPACK Fortran C)
+project(LAPACK C)
+
+option(LAPACK "Build LAPACK" ON)
+
+if(LAPACK)
+  enable_language(Fortran)
+endif()
 
 set(LAPACK_MAJOR_VERSION 3)
 set(LAPACK_MINOR_VERSION 9)
@@ -161,17 +167,19 @@ CheckLAPACKCompilerFlags()
 # --------------------------------------------------
 # Check second function
 
-include(CheckTimeFunction)
-set(TIME_FUNC NONE ${TIME_FUNC})
-CHECK_TIME_FUNCTION(NONE TIME_FUNC)
-CHECK_TIME_FUNCTION(INT_CPU_TIME TIME_FUNC)
-CHECK_TIME_FUNCTION(EXT_ETIME TIME_FUNC)
-CHECK_TIME_FUNCTION(EXT_ETIME_ TIME_FUNC)
-CHECK_TIME_FUNCTION(INT_ETIME TIME_FUNC)
-message(STATUS "--> Will use second_${TIME_FUNC}.f and dsecnd_${TIME_FUNC}.f as timing function.")
+if(LAPACK)
+  include(CheckTimeFunction)
+  set(TIME_FUNC NONE ${TIME_FUNC})
+  CHECK_TIME_FUNCTION(NONE TIME_FUNC)
+  CHECK_TIME_FUNCTION(INT_CPU_TIME TIME_FUNC)
+  CHECK_TIME_FUNCTION(EXT_ETIME TIME_FUNC)
+  CHECK_TIME_FUNCTION(EXT_ETIME_ TIME_FUNC)
+  CHECK_TIME_FUNCTION(INT_ETIME TIME_FUNC)
+  message(STATUS "--> Will use second_${TIME_FUNC}.f and dsecnd_${TIME_FUNC}.f as timing function.")
 
-set(SECOND_SRC ${LAPACK_SOURCE_DIR}/INSTALL/second_${TIME_FUNC}.f)
-set(DSECOND_SRC ${LAPACK_SOURCE_DIR}/INSTALL/dsecnd_${TIME_FUNC}.f)
+  set(SECOND_SRC ${LAPACK_SOURCE_DIR}/INSTALL/second_${TIME_FUNC}.f)
+  set(DSECOND_SRC ${LAPACK_SOURCE_DIR}/INSTALL/dsecnd_${TIME_FUNC}.f)
+endif()
 
 # deprecated LAPACK and LAPACKE routines
 option(BUILD_DEPRECATED "Build deprecated routines" OFF)
